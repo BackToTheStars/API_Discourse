@@ -35,7 +35,8 @@ def home():
 # GET /game/turn/quotes
 # GET /game/turn/comments
 
-# POST /game data: {name:}            - создать игру 
+# POST /game data: {name:}                       - создать игру 
+# POST /game/<string:name>/turn/<string:number>  - создать ход игры по её имени, передать номер хода и игрока
 # POST /game/turn<string:name>/text
 # POST /game/turn/quotes
 # POST /game/turn/comments
@@ -85,7 +86,7 @@ def get_game_turns(name):
       return jsonify({'turns': game['turns']})
   return jsonify({'message': 'Game not found'})
   
-  
+
 
 # POST /game data: {name:}            - создать игру 
 @app.route('/game', methods=['POST'])
@@ -98,6 +99,19 @@ def create_game(name):
   games.append(new_game)
   return jsonify(new_game)
 
+# POST /game/<string:name>/turn/<string:number>  - создать ход игры по её имени, передать номер хода и игрока
+@app.route('/game/<string:name>/turn/<string:number>', methods=['POST'])
+def create_game_turn(name, number, player):
+  request_data = request.get_json()
+  for game in games:
+    if game['gameName'] == name:
+      new_turn = {
+        'turnId': request_data['number'],
+        'player': request_data['player']
+      }
+      game['turns'].append(new_turn)
+      return jsonify(new_turn)
+  return jsonify({'message': 'Game not found'})
 
 
 app.run(port=5000)
