@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -29,16 +29,21 @@ games = [
 def home():
   return "Hello World!"
 
+# GET /games                          - вывести весь список игр
+# GET /game/<string:name>             - вывести игру по имени http://127.0.0.1:5000//game/some_name
 # GET /game/turn
 # GET /game/turn/quotes
 # GET /game/turn/comments
- 
+
+# POST /game data: {name:}              - создать игру 
 # POST /game/turn<string:name>/text
 # POST /game/turn/quotes
 # POST /game/turn/comments
 
 # DELETE /game/turn
 # DELETE /game/turn/comment
+
+
 
 # POST games/game/turn<string:name>/text
 @app.route('/games/game<string:game>/turn<string:turn>/text', methods=['POST'])
@@ -63,6 +68,19 @@ def getGameTurnQuotes(game, turn):
 def get_games():
   return jsonify({'games': games})
 
+# GET /game/<string:name>             - вывести игру по имени http://127.0.0.1:5000//game/some_name
+
+
+# POST /game data: {name:}
+@app.route('/game', methods=['POST'])
+def create_game(name):
+  request_data = request.get_json()
+  new_game = {
+    'gameName': request_data['name'],
+    'turns': []
+  }
+  games.append(new_game)
+  return jsonify(new_game)
 
 
 
