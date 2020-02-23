@@ -31,11 +31,11 @@ def home():
 
 # GET /games                          - вывести весь список игр
 # GET /game/<string:name>             - вывести игру по имени http://127.0.0.1:5000//game/some_name
-# GET /game/turn
+# GET /game/<string:name>/turns       - вывести ходы игры по её имени
 # GET /game/turn/quotes
 # GET /game/turn/comments
 
-# POST /game data: {name:}              - создать игру 
+# POST /game data: {name:}            - создать игру 
 # POST /game/turn<string:name>/text
 # POST /game/turn/quotes
 # POST /game/turn/comments
@@ -63,21 +63,31 @@ def getGameTurnQuotes(game, turn):
 
 
 
-# GET /games
+
+# GET /games                          - вывести весь список игр
 @app.route('/games')
 def get_games():
   return jsonify({'games': games})
 
-# GET /game/<string:name>               - вывести игру по имени http://127.0.0.1:5000//game/some_name
+# GET /game/<string:name>             - вывести игру по имени http://127.0.0.1:5000//game/some_name
 @app.route('/game/<string:name>')
 def get_game(name):
-  for game in games:                    # iterate over all games
-    if game['gameName'] == name:        # if the game name matches, return it
-      return jsonify(game)              # if none matches, return an error message
+  for game in games:                  # iterate over all games
+    if game['gameName'] == name:      # if the game name matches, return it
+      return jsonify(game)            # if none matches, return an error message
   return jsonify({'message': 'Game not found'})
 
+# GET /game/<string:name>/turns       - вывести ходы игры по её имени
+@app.route('/game/<string:name>/turns')
+def get_game_turns(name):
+  for game in games:
+    if game['gameName'] == name:
+      return jsonify({'turns': game['turns']})
+  return jsonify({'message': 'Game not found'})
+  
+  
 
-# POST /game data: {name:}
+# POST /game data: {name:}            - создать игру 
 @app.route('/game', methods=['POST'])
 def create_game(name):
   request_data = request.get_json()
