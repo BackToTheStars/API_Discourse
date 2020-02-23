@@ -40,20 +40,31 @@ def home():
 # DELETE /game/turn
 # DELETE /game/turn/comment
 
-# POST /game/turn<string:name>/text
-@app.route('/game<string:game>/turn<string:turn>/text', methods=['POST'])
+# POST games/game/turn<string:name>/text
+@app.route('/games/game<string:game>/turn<string:turn>/text', methods=['POST'])
 def postGameTurnText(game, turn):
   pass
 
-# POST /game<string:game>/turn<string:turn>/quotes
-@app.route('/game<string:game>/turn<string:turn>/quotes', methods=['POST'])
+# POST games/game<string:game>/turn<string:turn>/quotes
+@app.route('/games/game<string:game>/turn<string:turn>/quotes', methods=['POST'])
 def postGameTurnQuotes(game, turn):
   pass
 
-# GET /game/turn<string:name>/quotes
-@app.route('/game<string:game>/turn<string:turn>/quotes')
+# GET games/game/turn<string:name>/quotes
+@app.route('/games/game<string:game>/turn<string:turn>/quotes')
 def getGameTurnQuotes(game, turn):
   pass
+
+
+
+
+# GET /games
+@app.route('/games')
+def get_games():
+  return jsonify({'games': games})
+
+
+
 
 app.run(port=5000)
 
