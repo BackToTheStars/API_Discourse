@@ -68,7 +68,13 @@ def getGameTurnQuotes(game, turn):
 def get_games():
   return jsonify({'games': games})
 
-# GET /game/<string:name>             - вывести игру по имени http://127.0.0.1:5000//game/some_name
+# GET /game/<string:name>               - вывести игру по имени http://127.0.0.1:5000//game/some_name
+@app.route('/game/<string:name>')
+def get_game(name):
+  for game in games:                    # iterate over all games
+    if game['gameName'] == name:        # if the game name matches, return it
+      return jsonify(game)              # if none matches, return an error message
+  return jsonify({'message': 'Game not found'})
 
 
 # POST /game data: {name:}
