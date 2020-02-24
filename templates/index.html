@@ -12,13 +12,21 @@
           xmlHttp.open("GET", theUrl, true); // true for asynchronous
           xmlHttp.send(null);
       }
+
+      httpGetAsync('http://127.0.0.1:5000/games', function(response) {
+        alert(response);
+      })
+
     </script>
   </head>
-  
+
   <body>
     <div id="myElement">
       Hello, world!
     </div>
+    
+    <script>
+    </script>  
   </body>
 
 </html>

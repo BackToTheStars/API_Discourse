@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
@@ -27,7 +27,7 @@ games = [
 
 @app.route('/')
 def home():
-  return "Hello World!"
+  return render_template('index.html')
 
 # GET /games                          - вывести весь список игр
 # GET /game/<string:name>             - вывести игру по имени http://127.0.0.1:5000//game/some_name
