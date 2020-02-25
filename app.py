@@ -64,6 +64,8 @@ def getGameTurnQuotes(game, turn):
 
 
 
+# ************************  GET  **********************************
+
 
 # GET /games                          - вывести весь список игр
 @app.route('/games')
@@ -88,30 +90,36 @@ def get_game_turns(name):
   
 
 
+
+
+# ***********************   POST  *********************************
+
+
 # POST /game data: {name:}            - создать игру 
 @app.route('/game', methods=['POST'])
 def create_game():
   request_data = request.get_json()
   new_game = {
-    'gameName': request_data['name'],
+    'gameName': request_data['gameName'],
     'turns': []
   }
   games.append(new_game)
   return jsonify(new_game)
 
-# POST /game/<string:name>/turn/<string:number>  - создать ход игры по её имени, передать номер хода и игрока
-@app.route('/game/<string:name>/turn/<string:number>', methods=['POST'])
-def create_game_turn(name, number, player):
+# POST /game/<string:name>/turn  - создать ход игры по её имени, передать номер хода и игрока
+@app.route('/game/<string:name>/turn', methods=['POST'])
+def create_game_turn(name):
   request_data = request.get_json()
   for game in games:
     if game['gameName'] == name:
       new_turn = {
-        'turnId': request_data['number'],
-        'player': request_data['player']
+        'turnId': request_data['turnId'],        
+        'player': request_data['player'],
       }
       game['turns'].append(new_turn)
       return jsonify(new_turn)
   return jsonify({'message': 'Game not found'})
+
 
 
 app.run(port=5000)
