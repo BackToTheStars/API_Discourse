@@ -110,11 +110,13 @@ def create_game():
 @app.route('/game/<string:name>/turn', methods=['POST'])
 def create_game_turn(name):
   request_data = request.get_json()
+  # была ошибка в Postman - передача Json без запятых
   for game in games:
     if game['gameName'] == name:
       new_turn = {
         'turnId': request_data['turnId'],        
         'player': request_data['player'],
+        'mainText': request_data['mainText'],
       }
       game['turns'].append(new_turn)
       return jsonify(new_turn)
