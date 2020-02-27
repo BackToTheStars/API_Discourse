@@ -12,12 +12,17 @@ games = []
 class Game(Resource):
   
   def get(self, name):
-    for game in games:
-      if game['gameName'] == name:
-        return game                      
-    return {'game': None}, 404
+    game = next(filter(lambda x: x['gameName'] == name, games), None)   # function, object
+    return {'game': game}, 200 if game else 404
+
+  """ for game in games:
+        if game['gameName'] == name:
+          return game   
+  """        
 
   def post(self, name):
+    if next(filter(lambda x: x['gameName'] == name, games), None):
+      return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request
     data = request.get_json()
     game = {
       'gameId': data['gameId'],
