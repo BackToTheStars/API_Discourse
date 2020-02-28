@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 
 
 app = Flask(__name__)
+app.secret_key = 'app'                                 # should be long and secure
 api = Api(app)
 
 games = []
