@@ -1,20 +1,20 @@
 
 from flask import Flask, request
 from flask_restful import Resource, Api
-from flask_jwt import JWT
+from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
 
 app = Flask(__name__)
-app.secret_key = 'app'                                 # should be long and secure
+app.secret_key = 'app'                          # should be long and secure
 api = Api(app)
 
-jwt = JWT(app, authenticate, identity)
+jwt = JWT(app, authenticate, identity)          # creates new endpoint /auth
 
 games = []
 
 
 class Game(Resource):
-  
+  @jwt_required() 
   def get(self, name):
     game = next(filter(lambda x: x['gameName'] == name, games), None)  # function, object
     return {'game': game}, 200 if game else 404
