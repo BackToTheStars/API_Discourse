@@ -1,11 +1,14 @@
 
 from flask import Flask, request
 from flask_restful import Resource, Api
-
+from flask_jwt import JWT
+from security import authenticate, identity
 
 app = Flask(__name__)
 app.secret_key = 'app'                                 # should be long and secure
 api = Api(app)
+
+jwt = JWT(app, authenticate, identity)
 
 games = []
 
@@ -13,7 +16,7 @@ games = []
 class Game(Resource):
   
   def get(self, name):
-    game = next(filter(lambda x: x['gameName'] == name, games), None)   # function, object
+    game = next(filter(lambda x: x['gameName'] == name, games), None)  # function, object
     return {'game': game}, 200 if game else 404
 
   """ for game in games:
