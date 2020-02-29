@@ -36,6 +36,20 @@ class Game(Resource):
     games.append(game)
     return game, 201
   
+  def put(self, name):
+    data = request.get_json()
+    game = next(filter(lambda x: x['gameName'] == name, games), None)
+    if game is None:
+      game = {
+        'gameId': data['gameId'],
+        'gameName': name,
+        'turns': data['turns']
+      }
+      games.append(game)
+    else:
+      game.update(data)
+    return game
+
   def delete(self, name):
     global games
     games = list(filter(lambda x: x['gameName'] != name, games))
