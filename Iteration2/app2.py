@@ -1,6 +1,6 @@
 
 from flask import Flask, request
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
 
@@ -37,17 +37,22 @@ class Game(Resource):
     return game, 201
   
   def put(self, name):
-    data = request.get_json()
+    parser = reqparse.RequestParser()
+    
+    parser.add_argument('turns', type=dict, location='json')
+    parser.add_argument('gameId', type=int)
+    data = parser.parse_args()
+
     game = next(filter(lambda x: x['gameName'] == name, games), None)
     if game is None:
       game = {
         'gameId': data['gameId'],
         'gameName': name,
-        'turns': data['turns']
+        'turns': [(data['turns'])]
       }
       games.append(game)
     else:
-      game.update(data)
+      game['turns'].append(data['turns'])
     return game
 
   def delete(self, name):
