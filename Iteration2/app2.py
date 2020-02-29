@@ -35,6 +35,11 @@ class Game(Resource):
     }
     games.append(game)
     return game, 201
+  
+  def delete(self, name):
+    global games
+    games = list(filter(lambda x: x['gameName'] != name, games))
+    return {'message': 'Game deleted'}
 
 class GameList(Resource):
   def get(self):
