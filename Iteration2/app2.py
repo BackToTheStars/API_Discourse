@@ -38,9 +38,9 @@ class Game(Resource):
   
   def put(self, name):
     parser = reqparse.RequestParser()
+    parser.add_argument('turns', type=dict, location='json', required=True)
+    parser.add_argument('gameId', type=int, required=True)
     
-    parser.add_argument('turns', type=dict, location='json')
-    parser.add_argument('gameId', type=int)
     data = parser.parse_args()
 
     game = next(filter(lambda x: x['gameName'] == name, games), None)
