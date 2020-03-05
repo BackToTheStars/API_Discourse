@@ -36,6 +36,15 @@ class Game(Resource):
     connection.commit()
     connection.close()
 
+  @classmethod
+  def update(cls, game): # получает словарь игры, где есть имя и ходы
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+    query = "UPDATE games SET id=? AND turns=? WHERE gameName=?"  # delete только одну строку
+    cursor.execute(query, (game['id'], game['turns'], game['gameName']))
+    connection.commit()
+    connection.close()
+
   def post(self, name):
     if self.find_by_name(name):
       return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
@@ -49,18 +58,19 @@ class Game(Resource):
   
   def put(self, name):
     data = Game.parser.parse_args()
-    
-    game = next(filter(lambda x: x['gameName'] == name, games), None)
+    game = self.find_by_name(name)
+    updated_game = {'id': data['gameId'], 'gameName': name, 'turns': data['turns']}
     if game is None:
-      game = {
-        'gameId': data['gameId'],
-        'gameName': name,
-        'turns': [(data['turns'])]
-      }
-      games.append(game)
+      try:
+        self.insert(updated_game)
+      except:
+        return {"message": "Error occurred inserting the game"}, 500
     else:
-      game['turns'].append(data['turns'])
-    return game
+      try:  
+        self.update(updated_game)
+      except:
+        return {"message": "Error occurred updating the game"}, 500
+    return updated_game
 
   def delete(self, name):
     connection = sqlite3.connect('data.db')
@@ -74,4 +84,12 @@ class Game(Resource):
 
 class GameList(Resource):
   def get(self):
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+    query = "SELECT * FROM games"  # delete только одну строку
+    result = cursor.execute(query)
+    games = []
+    for row in result:
+      games.append({'id': row[0], 'gameName': row[1], 'turns': row[2]})
+    connection.close()
     return {'games': games}
