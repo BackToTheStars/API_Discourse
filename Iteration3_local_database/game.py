@@ -36,12 +36,7 @@ class Game(Resource):
 
     data = Game.parser.parse_args()
 
-    game = {
-      'gameId': data['gameId'],
-      'gameName': name,
-      'turns': data['turns']
-    }
-    
+    game = {'gameId': data['gameId'], 'gameName': name, 'turns': data['turns']} # create JSON    
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
     query = "iNSERT INTO games VALUES (?, ?, ?)"
