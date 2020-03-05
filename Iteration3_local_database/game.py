@@ -27,13 +27,8 @@ class Game(Resource):
     if row:
       return {'game': {'gameId': row[0], 'gameName': row[1], 'turns': row[2]}}
 
-  def post(self, name):
-    if self.find_by_name(name):
-      return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
-
-    data = Game.parser.parse_args()
-
-    game = {'gameId': data['gameId'], 'gameName': name, 'turns': data['turns']} # create JSON    
+  @classmethod
+  def insert(cls, game):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
     query = "INSERT INTO games VALUES (?, ?, ?)"
@@ -41,6 +36,15 @@ class Game(Resource):
     connection.commit()
     connection.close()
 
+  def post(self, name):
+    if self.find_by_name(name):
+      return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
+    data = Game.parser.parse_args()
+    game = {'gameId': data['gameId'], 'gameName': name, 'turns': data['turns']} # create JSON    
+    try:
+      self.insert(game)
+    except:
+      {'message': 'Some error occurred while inserting the game'}, 500 # Internal Server Error
     return game, 201
   
   def put(self, name):
@@ -66,6 +70,7 @@ class Game(Resource):
     connection.commit()
     connection.close()
     return {'message': 'Game deleted'}
+
 
 class GameList(Resource):
   def get(self):
