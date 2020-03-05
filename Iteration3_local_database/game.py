@@ -15,7 +15,6 @@ class Game(Resource):
     if game:
       return game
     return {'message': 'Game not found'}, 404
-    
 
   @classmethod                                # скопировали из GET
   def find_by_name(cls, name):
@@ -27,8 +26,6 @@ class Game(Resource):
     connection.close()
     if row:
       return {'game': {'gameId': row[0], 'gameName': row[1], 'turns': row[2]}}
-  
-
 
   def post(self, name):
     if self.find_by_name(name):
@@ -39,7 +36,7 @@ class Game(Resource):
     game = {'gameId': data['gameId'], 'gameName': name, 'turns': data['turns']} # create JSON    
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "iNSERT INTO games VALUES (?, ?, ?)"
+    query = "INSERT INTO games VALUES (?, ?, ?)"
     cursor.execute(query, (game['gameId'], game['gameName'], game['turns']))
     connection.commit()
     connection.close()
@@ -62,8 +59,12 @@ class Game(Resource):
     return game
 
   def delete(self, name):
-    global games
-    games = list(filter(lambda x: x['gameName'] != name, games))
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+    query = "DELETE FROM games WHERE gameName=?"  # delete только одну строку
+    cursor.execute(query, (name,))
+    connection.commit()
+    connection.close()
     return {'message': 'Game deleted'}
 
 class GameList(Resource):
