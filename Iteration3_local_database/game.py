@@ -31,8 +31,8 @@ class Game(Resource):
   def insert(cls, game):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "INSERT INTO games VALUES (?, ?, ?)"
-    cursor.execute(query, (game['gameId'], game['gameName'], game['turns']))
+    query = "INSERT INTO games VALUES (?, ?)"
+    cursor.execute(query, (game['gameName'], game['turns']))
     connection.commit()
     connection.close()
 
@@ -40,8 +40,8 @@ class Game(Resource):
   def update(cls, game): # получает словарь игры, где есть имя и ходы
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "UPDATE games SET id=? AND turns=? WHERE gameName=?"  # delete только одну строку
-    cursor.execute(query, (game['id'], game['turns'], game['gameName']))
+    query = "UPDATE games SET turns=? WHERE gameName=?"  # UPDATE одну строку
+    cursor.execute(query, (game['turns'], game['gameName']))
     connection.commit()
     connection.close()
 
@@ -55,7 +55,7 @@ class Game(Resource):
     except:
       {'message': 'Some error occurred while inserting the game'}, 500 # Internal Server Error
     return game, 201
-  
+
   def put(self, name):
     data = Game.parser.parse_args()
     game = self.find_by_name(name)
