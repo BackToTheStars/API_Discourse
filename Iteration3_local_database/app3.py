@@ -28,7 +28,7 @@ api.add_resource(Game, '/game/<string:name>')    # GET http://127.0.0.1:5000/gam
 api.add_resource(GameList, '/games')
 api.add_resource(UserRegister, '/register')
 
-if __name__ == '__main__':
+if __name__ == '__main__':        # запускаем только если этот файл запущен как главный
   app.run(port=5000, debug=True)
 
 

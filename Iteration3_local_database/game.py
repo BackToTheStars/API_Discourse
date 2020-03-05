@@ -6,39 +6,32 @@ from flask_jwt import jwt_required
 
 class Game(Resource):
   parser = reqparse.RequestParser()
-  parser.add_argument('turns', type=dict, location='json', required=True)
+  parser.add_argument('turns', type=str, required=True)
   parser.add_argument('gameId', type=int, required=True)
 
   @jwt_required() 
   def get(self, name):
+    game = self.find_by_name(name)
+    if game:
+      return game
+    return {'message': 'Game not found'}, 404
+    
+
+  @classmethod                                # скопировали из GET
+  def find_by_name(cls, name):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-
     query = "SELECT * FROM games WHERE gameName=?"
     result = cursor.execute(query, (name,))
     row = result.fetchone()
-
     connection.close()
-
     if row:
       return {'game': {'gameId': row[0], 'gameName': row[1], 'turns': row[2]}}
-    
-    return {'message': 'Game not found'}, 404
-    
-    
-
-    """ for game in games:
-        if game['gameName'] == name:
-          return game   
-    """    
-    # game = next(filter(lambda x: x['gameName'] == name, games), None)  # function, object
-    # return {'game': game}, 200 if game else 404
-
-
   
-  def post(self, name):
 
-    if next(filter(lambda x: x['gameName'] == name, games), None):
+
+  def post(self, name):
+    if self.find_by_name(name):
       return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
 
     data = Game.parser.parse_args()
@@ -46,9 +39,16 @@ class Game(Resource):
     game = {
       'gameId': data['gameId'],
       'gameName': name,
-      'turns': [],
+      'turns': data['turns']
     }
-    games.append(game)
+    
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
+    query = "iNSERT INTO games VALUES (?, ?, ?)"
+    cursor.execute(query, (game['gameId'], game['gameName'], game['turns']))
+    connection.commit()
+    connection.close()
+
     return game, 201
   
   def put(self, name):
