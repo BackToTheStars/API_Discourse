@@ -85,7 +85,7 @@ class Game(Resource):
   def delete(self, name):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "DELETE FROM games WHERE gameName=?"  # delete только одну строку
+    query = "DELETE FROM {table} WHERE gameName=?".format(table=self.TABLE_NAME)  # delete только одну строку
     cursor.execute(query, (name,))
     connection.commit()
     connection.close()
@@ -93,10 +93,12 @@ class Game(Resource):
 
 
 class GameList(Resource):
+  TABLE_NAME = 'games'
+  
   def get(self):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "SELECT * FROM games"  # delete только одну строку
+    query = "SELECT * FROM {table}".format(table=self.TABLE_NAME)  # delete только одну строку
     result = cursor.execute(query)
     games = []
     for row in result:
