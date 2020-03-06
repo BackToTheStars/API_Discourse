@@ -5,9 +5,12 @@ from flask_jwt import jwt_required
 
 
 class Game(Resource):
+  TABLE_NAME = 'games'
+
   parser = reqparse.RequestParser()
+  parser.add_argument('id', type=int, required=True)
+  parser.add_argument('gameName', type=str)
   parser.add_argument('turns', type=str, required=True)
-  parser.add_argument('gameId', type=int, required=True)
 
   @jwt_required() 
   def get(self, name):
@@ -20,19 +23,20 @@ class Game(Resource):
   def find_by_name(cls, name):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "SELECT * FROM games WHERE gameName=?"
+    query = "SELECT * FROM {table} WHERE gameName=?".format(table=cls.TABLE_NAME)
     result = cursor.execute(query, (name,))
     row = result.fetchone()
     connection.close()
+
     if row:
-      return {'game': {'gameId': row[0], 'gameName': row[1], 'turns': row[2]}}
+      return {'game': {'id': row[0], 'gameName': row[1], 'turns': row[2]}}
 
   @classmethod
   def insert(cls, game):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "INSERT INTO games VALUES (?, ?)"
-    cursor.execute(query, (game['gameName'], game['turns']))
+    query = "INSERT INTO {table} VALUES (?, ?, ?)".format(table=cls.TABLE_NAME)
+    cursor.execute(query, (game['id'], game['gameName'], game['turns']))
     connection.commit()
     connection.close()
 
@@ -40,37 +44,43 @@ class Game(Resource):
   def update(cls, game): # получает словарь игры, где есть имя и ходы
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
-    query = "UPDATE games SET turns=? WHERE gameName=?"  # UPDATE одну строку
+    query = "UPDATE {table} SET turns=? WHERE gameName=?".format(table=cls.TABLE_NAME)  # UPDATE одну строку
     cursor.execute(query, (game['turns'], game['gameName']))
     connection.commit()
     connection.close()
 
   def post(self, name):
+    status = 'failure'
     if self.find_by_name(name):
       return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
+
     data = Game.parser.parse_args()
-    game = {'gameId': data['gameId'], 'gameName': name, 'turns': data['turns']} # create JSON    
+    game = {'id': data['id'], 'gameName': name, 'turns': data['turns']} # create JSON    
     try:
-      self.insert(game)
+      Game.insert(game)
+      status = 'success, game created'
     except:
-      {'message': 'Some error occurred while inserting the game'}, 500 # Internal Server Error
-    return game, 201
+      {'status': status, 'message': 'Some error occurred while inserting the game'}, 500 # Internal Server Error
+    return {"game": game, "status": status}, 201
 
   def put(self, name):
+    status = 'failure'
     data = Game.parser.parse_args()
     game = self.find_by_name(name)
-    updated_game = {'id': data['gameId'], 'gameName': name, 'turns': data['turns']}
+    updated_game = {'id': data['id'], 'gameName': name, 'turns': data['turns']}
     if game is None:
       try:
         self.insert(updated_game)
+        status = 'success, inserted'
       except:
-        return {"message": "Error occurred inserting the game"}, 500
+        return {"status": status, "message": "Error occurred inserting the game"}, 500
     else:
       try:  
         self.update(updated_game)
+        status = 'success, updated'
       except:
         return {"message": "Error occurred updating the game"}, 500
-    return updated_game
+    return {"status": status, "game": updated_game}
 
   def delete(self, name):
     connection = sqlite3.connect('data.db')
