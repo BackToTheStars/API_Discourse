@@ -8,8 +8,8 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
 from security import authenticate, identity
-from user import UserRegister
-from game import Game, GameList
+from resources.user import UserRegister         # импорт из папки resources
+from resources.game import Game, GameList
 
 app = Flask(__name__)
 app.secret_key = 'app'                          # should be long and secure
