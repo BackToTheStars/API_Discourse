@@ -66,6 +66,7 @@ class Game(Resource):
 class GameList(Resource):
   TABLE_NAME = 'games'
   
+  @jwt_required() 
   def get(self):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
