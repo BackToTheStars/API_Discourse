@@ -12,6 +12,7 @@ from resources.user import UserRegister         # импорт из папки r
 from resources.game import Game, GameList
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'app'                          # should be long and secure
 api = Api(app)
 
@@ -24,6 +25,8 @@ api.add_resource(UserRegister, '/register')
 
 
 if __name__ == '__main__':        # запускаем только если этот файл запущен как главный
+  from db import db               # если поставить наверх, будет циклический импорт
+  db.init_app(app)
   app.run(port=5000, debug=True)
 
 
