@@ -5,20 +5,20 @@ class GameModel(db.Model):
   __tablename__ = 'games'
 
   id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String(255))
+  gameName = db.Column(db.String(255))
   turns = db.Column(db.String(255))           # db.Float(precision=2)
 
-  def __init__(self, id, name, turns):
+  def __init__(self, id, gameName, turns):
     self.id = id
-    self.name = name
+    self.gameName = gameName
     self.turns = turns
 
   def json(self):
-    return {'id': self.id, 'name': self.name, 'turns': self.turns}
+    return {'id': self.id, 'gameName': self.gameName, 'turns': self.turns}
 
   @classmethod                                    
-  def find_by_name(cls, name):
-    return cls.query.filter_by(name=name).first()
+  def find_by_name(cls, gameName):
+    return cls.query.filter_by(gameName=gameName).first()
 
   def save_to_db(self):
     db.session.add(self)
