@@ -1,5 +1,4 @@
 
-import sqlite3
 from db import db
 
 class GameModel(db.Model):
@@ -21,15 +20,10 @@ class GameModel(db.Model):
   def find_by_name(cls, name):
     return cls.query.filter_by(name=name).first()
 
-  def insert(self):
+  def save_to_db(self):
     db.session.add(self)
     db.session.commit()
 
-  def update(self): # получает словарь игры, где есть имя и ходы
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    query = "UPDATE {table} SET turns=? WHERE gameName=?".format(table=self.TABLE_NAME)  # UPDATE одну строку
-    cursor.execute(query, (self.turns, self.name))
-    connection.commit()
-    connection.close()
-
+  def delete_from_db(self):
+    db.session.delete(self)
+    db.session.commit()
