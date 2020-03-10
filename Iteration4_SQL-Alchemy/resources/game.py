@@ -28,7 +28,7 @@ class Game(Resource):
     data = Game.parser.parse_args()
     game = GameModel(data['id'], name, data['turns'])    
     try:
-      game.insert()
+      game.save_to_db()
       status = 'success, game created'
     except:
       {'status': status, 'message': 'Some error occurred while inserting the game'}, 500 # Internal Server Error
@@ -38,29 +38,19 @@ class Game(Resource):
     status = 'failure'
     data = Game.parser.parse_args()
     game = GameModel.find_by_name(name)
-    updated_game = GameModel(data['id'], name, data['turns'])
     if game is None:
-      try:
-        updated_game.insert()
-        status = 'success, inserted'
-      except:
-        return {"status": status, "message": "Error occurred inserting the game"}, 500
+      game = GameModel(data['id'], name, data['turns'])
     else:
-      try:  
-        updated_game.update()
-        status = 'success, updated'
-      except:
-        return {"message": "Error occurred updating the game"}, 500
-    return {"status": status, "game": updated_game.json()}
+      game.turns = data['turns']  
+    game.save_to_db()
+    return game.json()
 
   def delete(self, name):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    query = "DELETE FROM {table} WHERE gameName=?".format(table=self.TABLE_NAME)  # delete только одну строку
-    cursor.execute(query, (name,))
-    connection.commit()
-    connection.close()
-    return {'message': 'Game deleted'}
+    game = GameModel.find_by_name(name)
+    if game:
+      game.delete_from_db()
+      return {'message': 'Game deleted'}
+    return {'message': 'Game not found'}
 
 
 class GameList(Resource):
