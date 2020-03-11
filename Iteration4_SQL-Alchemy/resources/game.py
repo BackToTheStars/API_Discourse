@@ -1,5 +1,4 @@
 
-import sqlite3
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from models.game import GameModel
@@ -58,12 +57,6 @@ class GameList(Resource):
   
   @jwt_required() 
   def get(self):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    query = "SELECT * FROM {table}".format(table=self.TABLE_NAME)  # delete только одну строку
-    result = cursor.execute(query)
-    games = []
-    for row in result:
-      games.append({'id': row[0], 'gameName': row[1], 'turns': row[2]})
-    connection.close()
-    return {'games': games}
+    return {'games': [x.json() for x in GameModel.query.all()]}
+
+#or return {'games': list(map(lambda x: x.json(), GameModel.query.all()))} - maybe a little faster
