@@ -11,6 +11,7 @@ class Game(Resource):
   parser.add_argument('id', type=int, required=True)
   parser.add_argument('gameName', type=str)
   parser.add_argument('turns', type=str, required=True)
+  parser.add_argument('school_id', type=int, required=True, help='every game needs a school id')
 
   @jwt_required() 
   def get(self, name):
@@ -25,7 +26,7 @@ class Game(Resource):
       return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
 
     data = Game.parser.parse_args()
-    game = GameModel(data['id'], name, data['turns'])    
+    game = GameModel(data['id'], name, data['turns'], data['school_id'])    
     try:
       game.save_to_db()
       status = 'success, game created'
@@ -37,10 +38,13 @@ class Game(Resource):
     status = 'failure'
     data = Game.parser.parse_args()
     game = GameModel.find_by_name(name)
+    
     if game is None:
-      game = GameModel(data['id'], name, data['turns'])
+      game = GameModel(data['id'], name, data['turns'], data['school_id'])
     else:
       game.turns = data['turns']  
+      game.school_id = data['school_id']
+
     game.save_to_db()
     return game.json()
 
