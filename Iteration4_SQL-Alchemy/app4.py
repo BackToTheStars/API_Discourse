@@ -29,7 +29,7 @@ jwt = JWT(app, authenticate, identity)          # creates new endpoint /auth
 
 
 api.add_resource(UserRegister, '/register')
-api.add_resource(Game,         '/game/<string:name>')    # GET http://127.0.0.1:5000/game/Proton
+api.add_resource(Game,         '/game/<string:name>')    # GET http://127.0.0.1:5000/game/ProtonMass
 api.add_resource(GameList,     '/games')
 api.add_resource(School,       '/school/<string:schoolName>')  # так добавляется Resource
 api.add_resource(SchoolList,   '/schools')
