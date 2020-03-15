@@ -7,15 +7,14 @@ class GameModel(db.Model):
   gameName = db.Column(db.String(255))
 # turns = db.Column(db.String(255))           # db.Float(precision=2)       # |
   turns = db.relationship('TurnModel', lazy='dynamic')                      # |
-  
   school_id = db.Column(db.Integer, db.ForeignKey('schools.id'))  
                                                    # ссылка на таблицу schools, столбец id 
   school = db.relationship('SchoolModel')
 
-  def __init__(self, gameName, turns, school_id):
+  def __init__(self, gameName, school_id):
 #   self.id = id                                                            # |
     self.gameName = gameName
-    self.turns = turns
+#   self.turns = turns
     self.school_id = school_id
 
   def json(self):

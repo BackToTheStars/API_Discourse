@@ -1,4 +1,3 @@
-
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from models.game import GameModel
@@ -9,7 +8,7 @@ class Game(Resource):
 
   parser = reqparse.RequestParser()
 # parser.add_argument('id', type=int, required=True)
-  parser.add_argument('gameName', type=str, help='Include gameName')
+# parser.add_argument('gameName', type=str, help='Include gameName')
 # parser.add_argument('turns', type=str, required=True)
   parser.add_argument('school_id', type=int, required=True, help='every game needs a school_id')
 
@@ -35,14 +34,12 @@ class Game(Resource):
     return {"game": game.json(), "status": status}, 201
 
   def put(self, name):
-    status = 'failure'
     data = Game.parser.parse_args()
     game = GameModel.find_by_name(name)
     
     if game is None:
-      game = GameModel(name, data['turns'], data['school_id'])
-    else:
-      game.turns = data['turns']  
+      game = GameModel(name, data['school_id'])
+    else: 
       game.school_id = data['school_id']
 
     game.save_to_db()

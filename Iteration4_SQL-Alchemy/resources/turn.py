@@ -7,7 +7,6 @@ class Turn(Resource):
 
   parser = reqparse.RequestParser()  
   parser.add_argument('game_id', type=int, required=True, help='every turn needs a game id')
-  parser.add_argument('turnName', type=str)
 
   def get(self, turnName):
     turn = TurnModel.find_by_name(turnName)
@@ -19,12 +18,25 @@ class Turn(Resource):
   def post(self, turnName):
     if TurnModel.find_by_name(turnName):
       return {'message': 'Turn with name {} already exists.'.format(turnName)}, 400
-    turn = TurnModel(turnName)
+    
+    data = Turn.parser.parse_args()
+    turn = TurnModel(turnName, data['game_id'])
     try:
       turn.save_to_db()
     except:
       return {'message': 'An error occurred while saving the turn. Database error.'}, 500
     return turn.json(), 201
+
+  def put(self, turnName):
+    data = Turn.parser.parse_args()
+    turn = TurnModel.find_by_name(turnName)
+    
+    if turn is None:
+      turn = TurnModel(turnName, data['game_id'])
+    else: 
+      turn.game_id = data['game_id']
+    turn.save_to_db()
+    return turn.json()
 
 
   def delete(self, turnName):
