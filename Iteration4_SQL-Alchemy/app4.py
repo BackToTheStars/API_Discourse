@@ -34,7 +34,7 @@ api.add_resource(Game,         '/game/<string:name>')    # GET http://127.0.0.1:
 api.add_resource(GameList,     '/games')
 api.add_resource(School,       '/school/<string:schoolName>')  # так добавляется Resource
 api.add_resource(SchoolList,   '/schools')
-api.add_resource(Turn, '/turn/<string:turnName>')
+api.add_resource(Turn,         '/turn/<string:turnName>')
 api.add_resource(TurnList,     '/turns')
 
 

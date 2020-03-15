@@ -16,7 +16,7 @@ class TurnModel(db.Model):
 
   def json(self):
 #   return {'turnName': self.turnName, 'games': [game.json() for game in self.games.all()]} # added in GameModel
-    return {'game_id': self.game_id, 'turnName': self.turnName}     # |
+    return {'game_id': self.game_id, 'id': self.id, 'turnName': self.turnName}     # |
 
   @classmethod                                    
   def find_by_name(cls, turnName):

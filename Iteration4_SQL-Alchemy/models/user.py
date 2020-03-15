@@ -9,18 +9,25 @@ class UserModel(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(80))
   password = db.Column(db.String(255))
+  nickname = db.Column(db.String(80))
 
-  def __init__(self, username, password):
+  def __init__(self, username, password, nickname):
     self.username = username
     self.password = password
+    self.nickname = nickname
   
   def save_to_db(self):
     db.session.add(self)
     db.session.commit()
 
+
   @classmethod
   def find_by_username(cls, username):
     return cls.query.filter_by(username=username).first()
+
+  @classmethod
+  def find_by_nickname(cls, nickname):
+    return cls.query.filter_by(nickname=nickname).first()
 
   @classmethod
   def find_by_id(cls, _id):
