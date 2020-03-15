@@ -5,13 +5,13 @@ from models.game import GameModel
 
 
 class Game(Resource):
-  TABLE_NAME = 'games'
+# TABLE_NAME = 'games'
 
   parser = reqparse.RequestParser()
-  parser.add_argument('id', type=int, required=True)
-  parser.add_argument('gameName', type=str)
-  parser.add_argument('turns', type=str, required=True)
-  parser.add_argument('school_id', type=int, required=True, help='every game needs a school id')
+# parser.add_argument('id', type=int, required=True)
+  parser.add_argument('gameName', type=str, help='Include gameName')
+# parser.add_argument('turns', type=str, required=True)
+  parser.add_argument('school_id', type=int, required=True, help='every game needs a school_id')
 
   @jwt_required() 
   def get(self, name):
@@ -26,7 +26,7 @@ class Game(Resource):
       return {'message': "An item with name '{}' already exists".format(name)}, 400  # bad request. Error-first approach
 
     data = Game.parser.parse_args()
-    game = GameModel(data['id'], name, data['turns'], data['school_id'])    
+    game = GameModel(name, data['school_id'])       # |
     try:
       game.save_to_db()
       status = 'success, game created'
@@ -40,7 +40,7 @@ class Game(Resource):
     game = GameModel.find_by_name(name)
     
     if game is None:
-      game = GameModel(data['id'], name, data['turns'], data['school_id'])
+      game = GameModel(name, data['turns'], data['school_id'])
     else:
       game.turns = data['turns']  
       game.school_id = data['school_id']

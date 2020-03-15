@@ -11,6 +11,7 @@ from security import authenticate, identity
 from resources.user import UserRegister        
 from resources.game import Game, GameList
 from resources.school import School, SchoolList   # так добавляется Resource
+from resources.turn import Turn, TurnList
 
 
 app = Flask(__name__)
@@ -33,6 +34,8 @@ api.add_resource(Game,         '/game/<string:name>')    # GET http://127.0.0.1:
 api.add_resource(GameList,     '/games')
 api.add_resource(School,       '/school/<string:schoolName>')  # так добавляется Resource
 api.add_resource(SchoolList,   '/schools')
+api.add_resource(Turn, '/turn/<string:name>')
+api.add_resource(TurnList,     '/turns')
 
 
 if __name__ == '__main__':        # запускаем только если этот файл запущен как главный

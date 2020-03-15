@@ -1,9 +1,14 @@
 
-from flask_restful import Resource
-from models.game import GameModel                                              # |
+from flask_restful import Resource, reqparse
+from models.turn import TurnModel                                              # |
 
 class Turn(Resource):
-  
+# TABLE_NAME = 'turns'
+
+  parser = reqparse.RequestParser()  
+  parser.add_argument('game_id', type=int, required=True, help='every turn needs a game id')
+  parser.add_argument('turnName', type=str)
+
   def get(self, turnName):
     turn = TurnModel.find_by_name(turnName)
     if turn:
@@ -16,18 +21,18 @@ class Turn(Resource):
       return {'message': 'Turn with name {} already exists.'.format(turnName)}, 400
     turn = TurnModel(turnName)
     try:
-      school.save_to_db()
+      turn.save_to_db()
     except:
-      return {'message': 'An error occurred while saving the school. Database error.'}, 500
-    return school.json(), 201
+      return {'message': 'An error occurred while saving the turn. Database error.'}, 500
+    return turn.json(), 201
 
 
-  def delete(self, schoolName):
-    school = SchoolModel.find_by_name(schoolName)
-    if school:
-      school.delete_from_db() 
-    return {'message': 'School deleted. Sorry to see it.'}
+  def delete(self, turnName):
+    turn = TurnModel.find_by_name(turnName)
+    if turn:
+      turn.delete_from_db() 
+    return {'message': 'Turn deleted.'}
 
-class SchoolList(Resource):
+class TurnList(Resource):
   def get(self):
-    return {'Schools': [school.json() for school in SchoolModel.query.all()]} # or use map(lambda)
+    return {'turns': [turn.json() for turn in TurnModel.query.all()]} # or use map(lambda)
